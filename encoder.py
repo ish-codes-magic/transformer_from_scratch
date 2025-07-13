@@ -8,11 +8,11 @@ from feed_forward import FeedForwardBlock
 
 
 class EncoderBlock(nn.Module):
-    def __init__(self, self_attention_block: MultiHeadAttention, feed_forward_block: FeedForwardBlock, dropout:float) -> None:
+    def __init__(self, self_attention_block: MultiHeadAttention, feed_forward_block: FeedForwardBlock, dropout: float) -> None:
         super().__init__()
         self.self_attention_block = self_attention_block
         self.feed_forward_block = feed_forward_block
-        self.residual_connection = nn.ModuleList([ResidualConnections(dropout) for _ in range(2)])   #2 residual connections for encoder blocK(makes it easier to pass a function like the self attention block function in the next step)
+        self.residual_connection = nn.ModuleList([ResidualConnections(self_attention_block.d_model, dropout) for _ in range(2)])   #2 residual connections for encoder blocK(makes it easier to pass a function like the self attention block function in the next step)
         
     def forward(self, x, mask):
         x = self.residual_connection[0](x, lambda x: self.self_attention_block(x, x, x, mask))     #calculating self attention of encoder input with encoder mask
@@ -25,7 +25,7 @@ class Encoder(nn.Module):
     def __init__(self, layers: nn.ModuleList) -> None:
         super().__init__()
         self.layers = layers
-        self.layer_norm = LayerNormalisation()
+        self.layer_norm = LayerNormalisation(layers[0].self_attention_block.d_model)
         
     def forward(self, x, mask):
         #loop through all N encoder blocks

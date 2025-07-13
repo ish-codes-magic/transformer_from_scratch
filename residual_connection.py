@@ -4,10 +4,10 @@ import math
 from layer_norm import LayerNormalisation
 
 class ResidualConnections(nn.Module):
-    def __init__(self, dropout: float) -> None:
+    def __init__(self, features: int, dropout: float) -> None:
         super().__init__()
         self.dropout = nn.Dropout(dropout)
-        self.layer_norm = LayerNormalisation()
+        self.layer_norm = LayerNormalisation(features)
         
     def forward(self, x, sublayer):
         #apply layer normalisation to the input tensor x

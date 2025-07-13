@@ -3,12 +3,12 @@ import torch.nn as nn
 import math
 
 class LayerNormalisation(nn.Module):
-    def __init__(self, eps:float=10**-6) -> None:
+    def __init__(self, features: int, eps: float = 10**-6) -> None:
         super().__init__()
         self.eps = eps
         #define the learnable parameters alpha and beta
-        self.alpha = nn.Parameter(torch.ones(1)) #multipliable parameters
-        self.beta = nn.Parameter(torch.zeros(1)) #addable parameters
+        self.alpha = nn.Parameter(torch.ones(features)) #multipliable parameters
+        self.beta = nn.Parameter(torch.zeros(features)) #addable parameters
         
     def forward(self, x):
         x = x.type(torch.float64)

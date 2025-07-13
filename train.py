@@ -79,6 +79,8 @@ def train_model():
     print(f"Using {device} for training")
     Path(config['model_folder']).mkdir(parents=True, exist_ok=True)
     config = get_config()
+    Path(config['model']).mkdir(parents=True, exist_ok=True)
+    
     train_dataloader, val_dataloader, tokeniser_src, tokeniser_tgt = get_ds(config)
     model = get_model(config, len(tokeniser_src.get_vocab()), len(tokeniser_tgt.get_vocab()))
     model.to(device)
@@ -110,11 +112,11 @@ def train_model():
             encoder_mask = batch['encoder_mask'].to(device)
             decoder_mask = batch['decoder_mask'].to(device)
             
-            encoder_input = encoder_input.to(torch.float32)
-            decoder_input = decoder_input.type(torch.LongTensor)
+            encoder_input = encoder_input.to(torch.long)
+            decoder_input = decoder_input.to(torch.long)
             
             encoder_output = model.encode(encoder_input, encoder_mask)
-            decoder_output = model.decode(decoder_input, encoder_output, decoder_mask, encoder_mask)
+            decoder_output = model.decode(decoder_input, encoder_output, encoder_mask, decoder_mask)
             
             proj_output = model.project(decoder_output)
             
@@ -143,8 +145,7 @@ def train_model():
         }, model_filename)
         
 if __name__ == "__main__":
-    config = get_config()
-    train_model(config)
+    train_model()
         
             
 
